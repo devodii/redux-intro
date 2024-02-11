@@ -1,36 +1,67 @@
-const customerIntialState = { fullName: "", nationalID: "", createdAt: "" };
+import { createSlice } from "@reduxjs/toolkit";
 
-function customerReducer(state = customerIntialState, action) {
-  const { type, payload } = action;
+const initialState = { fullName: "", nationalID: "", createdAt: "" };
 
-  switch (type) {
-    case "customer/createCustomer":
-      return {
-        ...state,
-        fullName: payload.fullName,
-        nationalID: payload.nationalID,
-        createdAt: payload.createdAt,
-      };
+const customerSlice = createSlice({
+  name: "customer",
+  initialState,
+  reducers: {
+    createCustomer: {
+      prepare: (fullName, nationalID) => {
+        return {
+          payload: {
+            fullName,
+            nationalID,
+            createdAt: new Date().toISOString(),
+          },
+        };
+      },
 
-    case "customer/updateName":
-      return { ...state, fullName: payload };
+      reducer: (state, { payload }) => {
+        state.fullName = payload.fullName;
+        state.nationalID = payload.nationalID;
+        state.createdAt = payload.createdAt;
+      },
+    },
 
-    default:
-      return state;
-  }
-}
+    updateName(state, { payload }) {
+      state.fullName = payload;
+    },
+  },
+});
 
-function createCustomer(fullName, nationalID) {
-  return {
-    type: "customer/createCustomer",
-    payload: { fullName, nationalID, createdAt: new Date().toISOString() },
-  };
-}
+//  OLD WAY WITH TRADIIONAL REDUX!
+// function customerReducer(state = customerIntialState, action) {
+//   const { type, payload } = action;
 
-// eslint-disable-next-line no-unused-vars
-function updateName(fullName) {
-  return { type: "customer/updateName", payload: fullName };
-}
+//   switch (type) {
+//     case "customer/createCustomer":
+//       return {
+//         ...state,
+//         fullName: payload.fullName,
+//         nationalID: payload.nationalID,
+//         createdAt: payload.createdAt,
+//       };
 
-export { createCustomer, updateName };
-export default customerReducer;
+//     case "customer/updateName":
+//       return { ...state, fullName: payload };
+
+//     default:
+//       return state;
+//   }
+// }
+
+// function createCustomer(fullName, nationalID) {
+//   return {
+//     type: "customer/createCustomer",
+//     payload: { fullName, nationalID, createdAt: new Date().toISOString() },
+//   };
+// }
+
+// // eslint-disable-next-line no-unused-vars
+// function updateName(fullName) {
+//   return { type: "customer/updateName", payload: fullName };
+// }
+
+export const { createCustomer, updateName } = customerSlice.actions;
+export default customerSlice.reducer;
